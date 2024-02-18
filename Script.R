@@ -71,9 +71,14 @@ presidents$Inauguration_Day <- ifelse(!is.na(presidents$FIRST),
 presidents$Inauguration_Day <- as.Date(presidents$Inauguration_Day, origin = '1970-01-01')
 
 # Life Expectancy ####
+life_expectancy <- read_excel("data/presidents.xlsx", sheet = "Sheet3") 
+life_expectancy$Date <- str_extract(life_expectancy$Year, "[[:digit:]]+")
+life_expectancy$Date <- paste0(life_expectancy$Date, "-01-01")
+life_expectancy$Date <- as.Date(life_expectancy$Date, format = "%Y-%m-%d")
 
-
-Presidents_Age <- ggplot(presidents, aes(x = Number, y = Final_Age))+
-  geom_line()+
-  scale_x_discrete(labels= presidents$President)+
+# The Graph ####
+Presidents_Age <- ggplot()+
+  geom_line(presidents, mapping = aes(x = Inauguration_Day, y = Final_Age))+
+  geom_line(life_expectancy, mapping = aes(x = Date, y = Life_Expectancy))+
+  coord_cartesian(xlim = c(as.Date("1793-01-01", format = "%Y-%m-%d"), as.Date("2021-01-01", format = "%Y-%m-%d")))+
   theme(axis.text.x = element_text(angle = 90))
