@@ -1,4 +1,4 @@
-﻿Year,Median age (years),Source
+Year,Median age (years),Source
 2000,35.3,US Census
 1990,32.9,US Census
 1980,30,US Census
@@ -20,4 +20,6 @@
 1830,17.2,US Census
 1820,16.7,US Census
 2010,37.2,CNN
-2020,38.8,CNN
+2020,37.4,CNN
+2021,37.6,US Census
+2022,37.8,US Census

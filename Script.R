@@ -76,6 +76,24 @@ life_expectancy$Date <- str_extract(life_expectancy$Year, "[[:digit:]]+")
 life_expectancy$Date <- paste0(life_expectancy$Date, "-01-01")
 life_expectancy$Date <- as.Date(life_expectancy$Date, format = "%Y-%m-%d")
 
+life_expectancy_US_1950_2100 <- read.csv("Data/US_Expectancy_Male_01.csv")
+colnames(life_expectancy_US_1950_2100) <- c("Date", "Life_Expectancy", "Anual_Change")
+
+life_expectancy_final <- rbind(
+  data.frame(
+    life_expectancy[
+      life_expectancy$Date < as.Date("1951-1-1", format = "%Y-%m-%d"),
+      c("Date", "Life_Expectancy")
+    ]
+  ),
+  data.frame(
+    life_expectancy_US_1950_2100[
+      life_expectancy_US_1950_2100$Date >= as.Date("1950-1-1", format = "%Y-%m-%d"),
+      c("Date", "Life_Expectancy")
+    ]
+  )
+)
+
 # Median Age ####
 median_age <- read.csv("data/median_age.csv")
 colnames(median_age) <- c("Year", "Median_Age", "Source")
@@ -86,7 +104,7 @@ median_age$Year <- as.Date(median_age$Year, format = "%d-%m-%Y")
 
 # The Graph ####
 Presidents_Age <- ggplot()+
-  geom_area(life_expectancy, mapping = aes(x = Date, y = Life_Expectancy), fill = "yellow", alpha = 0.3)+
+  geom_area(life_expectancy_final, mapping = aes(x = Date, y = Life_Expectancy), fill = "yellow", alpha = 0.6)+
   geom_area(median_age, mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.5)+
   geom_line(presidents, mapping = aes(x = Inauguration_Day, y = Final_Age))+
   coord_cartesian(xlim = c(as.Date("1793-01-01", format = "%Y-%m-%d"), as.Date("2021-01-01", format = "%Y-%m-%d")))+
