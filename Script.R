@@ -101,11 +101,39 @@ median_age$Year <- as.character(median_age$Year)
 median_age$Year <- paste0("01-01-", median_age$Year)
 median_age$Year <- as.Date(median_age$Year, format = "%d-%m-%Y")
 
+# Project Median Age ####
+# Create a new value of date with origin in 1793-01-01. Using 1792-12-31 to establish the difference from the next day
+days_1970_1793 <- difftime("1970-01-01","1792-12-31")
+median_age$Date1793 <- as.numeric(days_1970_1973 + as.numeric(median_age$Year))
+# Create the equation
+project_median_age <- lm(Median_Age ~ Date1793, data=median_age) 
+origin <- project_median_age$coefficients[1]
+slope <- project_median_age$coefficients[2]
+# Creating the matrix with projected and other values
+additional_dates <- c("1775-01-01", "2035-01-01")
+auxiliar_matrix <- matrix(nrow = length(additional_dates), ncol = ncol(median_age))
+for(i in 1:nrow(auxiliar_matrix)){
+  auxiliar_matrix[i,1] <- additional_dates[i]
+  auxiliar_matrix[i,4] <- as.numeric(days_1970_1793 + as.Date(auxiliar_matrix[i,1], origin = "1970-01-01"))-1
+  auxiliar_matrix[i,3] <- "Estimated"
+  auxiliar_matrix[i,2] <- origin + (slope * as.numeric(auxiliar_matrix[i,4]))
+}
+auxiliar_dataframe <- data.frame(
+  as.Date(auxiliar_matrix[,1]),
+  as.numeric(auxiliar_matrix[,2]),
+  auxiliar_matrix[,3],
+  as.numeric(auxiliar_matrix[,4])
+)
+colnames(auxiliar_dataframe) <- colnames(median_age)
+median_age <- rbind(median_age, auxiliar_dataframe)
+
 
 # The Graph ####
 Presidents_Age <- ggplot()+
   geom_area(life_expectancy_final, mapping = aes(x = Date, y = Life_Expectancy), fill = "yellow", alpha = 0.6)+
   geom_area(median_age, mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.5)+
+  #scale_alpha_manual(values = value_alpha)+
   geom_line(presidents, mapping = aes(x = Inauguration_Day, y = Final_Age))+
   coord_cartesian(xlim = c(as.Date("1793-01-01", format = "%Y-%m-%d"), as.Date("2021-01-01", format = "%Y-%m-%d")))+
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position="none")
