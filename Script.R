@@ -104,7 +104,7 @@ median_age$Year <- as.Date(median_age$Year, format = "%d-%m-%Y")
 # Project Median Age ####
 # Create a new value of date with origin in 1793-01-01. Using 1792-12-31 to establish the difference from the next day
 days_1970_1793 <- difftime("1970-01-01","1792-12-31")
-median_age$Date1793 <- as.numeric(days_1970_1973 + as.numeric(median_age$Year))
+median_age$Date1793 <- as.numeric(days_1970_1793 + as.numeric(median_age$Year))
 # Create the equation
 project_median_age <- lm(Median_Age ~ Date1793, data=median_age) 
 origin <- project_median_age$coefficients[1]
@@ -126,14 +126,26 @@ auxiliar_dataframe <- data.frame(
 )
 colnames(auxiliar_dataframe) <- colnames(median_age)
 median_age <- rbind(median_age, auxiliar_dataframe)
+median_age <- median_age %>% 
+  arrange(Year)
 
 
 # The Graph ####
 Presidents_Age <- ggplot()+
-  geom_area(life_expectancy_final, mapping = aes(x = Date, y = Life_Expectancy), fill = "yellow", alpha = 0.6)+
-  geom_area(median_age, mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.5)+
-  #scale_alpha_manual(values = value_alpha)+
+  geom_area(life_expectancy_final, mapping = aes(x = Date, y = Life_Expectancy), fill = "yellow", alpha = 0.7)+
+  geom_area(median_age[1:2,], mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.3)+
+  geom_area(median_age[(nrow(median_age)-1):nrow(median_age),], mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.3)+
+  geom_area(median_age[2:(nrow(median_age)-1),], mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.8)+
   geom_line(presidents, mapping = aes(x = Inauguration_Day, y = Final_Age))+
   coord_cartesian(xlim = c(as.Date("1793-01-01", format = "%Y-%m-%d"), as.Date("2021-01-01", format = "%Y-%m-%d")))+
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position="none")
+  scale_y_continuous(breaks = seq(0, 100, by = 10))+
+  labs(title = "Age of US Presidents at Inau guration",
+       x = "Year",
+       y = "Age")+
+  theme(axis.text.x = element_text(angle = 90, face = "bold", colour = "black"),
+        axis.text.y = element_text(face = "bold", colour = "black"),
+        legend.position = "none",
+        panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(colour = "grey"))
