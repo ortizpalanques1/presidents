@@ -69,6 +69,10 @@ presidents$Inauguration_Day <- ifelse(!is.na(presidents$FIRST),
                                       as.Date(presidents$SECOND)
                                 )
 presidents$Inauguration_Day <- as.Date(presidents$Inauguration_Day, origin = '1970-01-01')
+presidents <- presidents %>% 
+  arrange(Final_Age) %>% 
+  mutate("Index_Row" = seq(1, nrow(presidents), by = 1)) %>% 
+  mutate("Five_Older" = ifelse(Index_Row >= (max(Index_Row)-4),President,NA))
 
 # Life Expectancy ####
 life_expectancy <- read_excel("data/presidents.xlsx", sheet = "Sheet3") 
@@ -110,7 +114,7 @@ project_median_age <- lm(Median_Age ~ Date1793, data=median_age)
 origin <- project_median_age$coefficients[1]
 slope <- project_median_age$coefficients[2]
 # Creating the matrix with projected and other values
-additional_dates <- c("1775-01-01", "2035-01-01")
+additional_dates <- c("1775-01-01", "2060-01-01")
 auxiliar_matrix <- matrix(nrow = length(additional_dates), ncol = ncol(median_age))
 for(i in 1:nrow(auxiliar_matrix)){
   auxiliar_matrix[i,1] <- additional_dates[i]
@@ -137,9 +141,12 @@ Presidents_Age <- ggplot()+
   geom_area(median_age[(nrow(median_age)-1):nrow(median_age),], mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.3)+
   geom_area(median_age[2:(nrow(median_age)-1),], mapping = aes(x = Year, y = Median_Age), fill = 4, alpha = 0.8)+
   geom_line(presidents, mapping = aes(x = Inauguration_Day, y = Final_Age))+
-  coord_cartesian(xlim = c(as.Date("1793-01-01", format = "%Y-%m-%d"), as.Date("2021-01-01", format = "%Y-%m-%d")))+
+  geom_text(presidents, mapping = aes(x = Inauguration_Day, y = Final_Age, label = Five_Older), hjust = 0, nudge_x = 0.05, angle = 25, size = 2.5, check_overlap = TRUE)+
+  coord_cartesian(xlim = c(as.Date("1793-01-01", format = "%Y-%m-%d"), as.Date("2040-01-01", format = "%Y-%m-%d")))+
   scale_y_continuous(breaks = seq(0, 100, by = 10))+
-  labs(title = "Age of US Presidents at Inau guration",
+  scale_x_date(date_breaks = "20 year", date_labels = "%Y")+
+  labs(title = "Age of US Presidents at Inauguration",
+       subtitle = "With the Names of the Five Older Presidents",
        x = "Year",
        y = "Age")+
   theme(axis.text.x = element_text(angle = 90, face = "bold", colour = "black"),
@@ -149,3 +156,11 @@ Presidents_Age <- ggplot()+
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
         panel.grid.major.y = element_line(colour = "grey"))
+
+ggsave(filename = "output/presidents.png",
+       plot = Presidents_Age,
+       device = "png",
+       units = "cm",
+       height = 16,
+       width = 16)
+
