@@ -17,14 +17,24 @@ Historically, United States' population median age and life expectancy have incr
 ## Chart
 <img src="output/presidents.png" alt="drawing" width="300"/>
 ## Sources
+
 ###Life Expectancy
+
 US from 1950: https://www.macrotrends.net/countries/USA/united-states/life-expectancy
+
 https://www.verywellhealth.com/longevity-throughout-history-2224054
-###Inauguration Day
+
+###Inauguration Day 
+
 https://historyinpieces.com/research/presidential-inauguration-dates
+
 ###Median Age
+
 US Census: https://www2.census.gov/programs-surveys/decennial/2000/phc/phc-t-09/tab07.pdf
+
 US Census: https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-detail.html
+
 Newsweek: https://edition.cnn.com/2023/05/25/health/us-population-median-age-39/index.html#:~:text=Overall%2C%20the%20new%20data%20reveals%20that%20the%20median,in%202020%2C%20and%20Utah%20had%20the%20youngest%2C%2031.3.
+
 
 
