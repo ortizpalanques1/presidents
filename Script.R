@@ -2,12 +2,14 @@
 library(readxl)
 library(tidyverse)
 
-# Sources ####
-#Age at inauguration: https://potus.com/presidential-facts/age-at-inauguration/
-#Day of inauguration: https://historyinpieces.com/research/presidential-inauguration-dates
+# Functions ####
+## correlation given age ####
+determine_age <- function(origin, slope, x){
+  determined_age <- origin + (slope * as.numeric(days_1970_1793 + as.numeric(x)))
+  return(determined_age)
+}
 
 # Read and Arrange Data ####
-  
 ## President's Age ####
 presidents <- read_excel("data/presidents.xlsx", sheet = "Sheet1") 
 alpha <- colnames(presidents)
@@ -18,7 +20,6 @@ presidents <- presidents %>%
          DaysOnly = as.numeric(trimws(str_extract(Age, " [:digit:]++")))/365,
          Final_Age = AgeOnly+DaysOnly) %>% 
   arrange(Number)
-
 
 ## Inauguration Date ####
 inauguration <- read_excel("data/presidents.xlsx", sheet = "Sheet2") 
@@ -43,8 +44,6 @@ for(d in 1:length(inauguration$FIRST)){
 }
 first_column <- as.Date(first_column, origin = '1970-01-01')
 inauguration$FIRST <- as.Date(first_column)
-
-
 
 second_column <- NULL
 for(d in 1:length(inauguration$SECOND)){
@@ -133,6 +132,30 @@ median_age <- rbind(median_age, auxiliar_dataframe)
 median_age <- median_age %>% 
   arrange(Year)
 
+# Calculating the proportion between age at inauguration and median age and life expectancy ####
+## Median Age
+presidents$Median_Age <- sapply(presidents$Inauguration_Day, determine_age, origin = origin, slope = slope)
+## Life expectancy
+life_expectancy_final$Date1793 <- as.numeric(days_1970_1793 + as.numeric(life_expectancy_final$Date))
+project_life_expectancy <- lm(Life_Expectancy ~ Date1793, data=life_expectancy_final) 
+origin_life_expectancy <- project_life_expectancy$coefficients[1]
+slope_life_expectancy <- project_life_expectancy$coefficients[2]
+presidents$Life_Expectancy <- sapply(presidents$Inauguration_Day, determine_age, origin = origin_life_expectancy, slope = slope_life_expectancy)
+
+# Calculating the proportion Age at Inauguration with Median Age and Life Expectancy ####
+presidents$Median_Age_Ratio <- presidents$Final_Age/presidents$Median_Age
+presidents$Life_Expectancy_Ratio <- presidents$Final_Age/presidents$Life_Expectancy
+
+# Sorting President and Proportions ####
+## Median Age ####
+president_proportion_median_age <- data.frame("President" = presidents$President, 
+                                              "Ratio" = presidents$Median_Age_Ratio)
+president_proportion_median_age <- president_proportion_median_age[order(president_proportion_median_age$Ratio, decreasing = TRUE),]
+
+## Life Expectancy ####
+president_proportion_life_expectancy <- data.frame("President" = presidents$President, 
+                                              "Ratio" = presidents$Life_Expectancy_Ratio)
+president_proportion_life_expectancy <- president_proportion_life_expectancy[order(president_proportion_life_expectancy$Ratio, decreasing = TRUE),]
 
 # The Graph ####
 Presidents_Age <- ggplot()+
