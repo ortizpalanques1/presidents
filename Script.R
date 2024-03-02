@@ -8,7 +8,7 @@ library(tidyverse)
 
 # Read and Arrange Data ####
   
-# President's Age
+## President's Age ####
 presidents <- read_excel("data/presidents.xlsx", sheet = "Sheet1") 
 alpha <- colnames(presidents)
 alpha[4] <- "Age"
@@ -20,7 +20,7 @@ presidents <- presidents %>%
   arrange(Number)
 
 
-# Inauguration Date
+## Inauguration Date ####
 inauguration <- read_excel("data/presidents.xlsx", sheet = "Sheet2") 
 # str(inauguration)
 # inauguration_1 <- inauguration[grepl("/", inauguration$FIRST),]
@@ -62,7 +62,7 @@ inauguration$SECOND <- as.Date(second_column)
 inauguration$THIRD <- as.Date(inauguration$THIRD)
 inauguration$FOURTH <- as.Date(inauguration$FOURTH)
 
-# Join the data frames ####
+## Join the data frames ####
 presidents <- left_join(presidents, subset(inauguration, select = -c(PRESIDENT)), by="Number")
 presidents$Inauguration_Day <- ifelse(!is.na(presidents$FIRST), 
                                       as.Date(presidents$FIRST), 
@@ -74,7 +74,7 @@ presidents <- presidents %>%
   mutate("Index_Row" = seq(1, nrow(presidents), by = 1)) %>% 
   mutate("Five_Older" = ifelse(Index_Row >= (max(Index_Row)-4),President,NA))
 
-# Life Expectancy ####
+## Life Expectancy ####
 life_expectancy <- read_excel("data/presidents.xlsx", sheet = "Sheet3") 
 life_expectancy$Date <- str_extract(life_expectancy$Year, "[[:digit:]]+")
 life_expectancy$Date <- paste0(life_expectancy$Date, "-01-01")
@@ -98,22 +98,22 @@ life_expectancy_final <- rbind(
   )
 )
 
-# Median Age ####
+## Median Age ####
 median_age <- read.csv("data/median_age.csv")
 colnames(median_age) <- c("Year", "Median_Age", "Source")
 median_age$Year <- as.character(median_age$Year)
 median_age$Year <- paste0("01-01-", median_age$Year)
 median_age$Year <- as.Date(median_age$Year, format = "%d-%m-%Y")
 
-# Project Median Age ####
-# Create a new value of date with origin in 1793-01-01. Using 1792-12-31 to establish the difference from the next day
+## Project Median Age ####
+### Create a new value of date with origin in 1793-01-01. Using 1792-12-31 to establish the difference from the next day
 days_1970_1793 <- difftime("1970-01-01","1792-12-31")
 median_age$Date1793 <- as.numeric(days_1970_1793 + as.numeric(median_age$Year))
-# Create the equation
+### Create the equation
 project_median_age <- lm(Median_Age ~ Date1793, data=median_age) 
 origin <- project_median_age$coefficients[1]
 slope <- project_median_age$coefficients[2]
-# Creating the matrix with projected and other values
+### Creating the matrix with projected and other values
 additional_dates <- c("1775-01-01", "2060-01-01")
 auxiliar_matrix <- matrix(nrow = length(additional_dates), ncol = ncol(median_age))
 for(i in 1:nrow(auxiliar_matrix)){
