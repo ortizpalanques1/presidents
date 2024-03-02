@@ -16,19 +16,21 @@ Historically, United States' population median age and life expectancy have incr
 7. Add, to that chart, the names of the five older US presidents.
 ## Chart
 <img src="output/presidents.png" alt="drawing" width="300"/>
+
+
 ## Sources
 
-###Life Expectancy
+### Life Expectancy
 
 US from 1950: https://www.macrotrends.net/countries/USA/united-states/life-expectancy
 
 https://www.verywellhealth.com/longevity-throughout-history-2224054
 
-###Inauguration Day 
+### Inauguration Day 
 
 https://historyinpieces.com/research/presidential-inauguration-dates
 
-###Median Age
+### Median Age
 
 US Census: https://www2.census.gov/programs-surveys/decennial/2000/phc/phc-t-09/tab07.pdf
 
