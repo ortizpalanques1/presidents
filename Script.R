@@ -10,7 +10,7 @@ determine_age <- function(origin, slope, x){
 }
 
 ## Theme for graphics ####
-my_theme <- theme(axis.text.x = element_text(angle = 90, face = "bold", colour = "black"),
+my_theme <- theme(axis.text.x = element_text(face = "bold", colour = "black"),
                   axis.text.y = element_text(face = "bold", colour = "black"),
                   legend.position = "none",
                   panel.background = element_blank(),
@@ -20,6 +20,18 @@ my_theme <- theme(axis.text.x = element_text(angle = 90, face = "bold", colour =
                   plot.caption = element_text(hjust = 0, face= "italic", color="#393b45"), #Default is hjust=1
                   plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
                   plot.caption.position =  "plot")
+
+## Save_graph ####
+graph_save <- function(p, n){
+  the_path <- deparse(substitute(p))
+  the_name <- deparse(substitute(n))
+  ggsave(filename = paste0(the_path, "/", the_name, ".png" ),
+         plot = n,
+         device = "png",
+         units = "cm",
+         height = 16,
+         width = 16)
+}
 
 # Read and Arrange Data ####
 ## President's Age ####
@@ -167,7 +179,15 @@ president_proportion_median_age <- president_proportion_median_age[order(preside
 
 median_age_proportion_graph <- ggplot(president_proportion_median_age, aes(x = Ratio))+
   geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
+  labs(title = "Ratio: Age of the Presidents and Median Age",
+       x = "Ratio",
+       y = "Frequency")+
   my_theme
+
+graph_save(output, median_age_proportion_graph)
+
+median_age_porportion_descriptives <- summary(president_proportion_median_age$Ratio)
+median_age_porportion_sd <- sd(president_proportion_median_age$Ratio)
 
 ## Life Expectancy ####
 president_proportion_life_expectancy <- data.frame("President" = presidents$President, 
@@ -176,7 +196,12 @@ president_proportion_life_expectancy <- president_proportion_life_expectancy[ord
 
 life_expectancy_ratio <- ggplot(president_proportion_life_expectancy, aes(x = Ratio))+
   geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
+  labs(title = "Ratio: Age of the Presidents and Life Expectancy",
+       x = "Ratio",
+       y = "Frequency")+
   my_theme
+
+graph_save(output, life_expectancy_ratio)
 
 life_expectancy_porportion_descriptives <- summary(president_proportion_life_expectancy$Ratio)
 life_expectancy_porportion_sd <- sd(president_proportion_life_expectancy$Ratio)
@@ -186,7 +211,14 @@ age_at_inauguration <- summary(presidents$Final_Age)
 age_at_inauguration_sd <- sd(presidents$Final_Age)
 presidents_age_graph <- ggplot(presidents, aes(x = Final_Age))+
   geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
+  scale_y_continuous(breaks = seq(0, 14, by = 2))+
+  labs(title = "Age of the Presidents (1789-2020)",
+       x = "Age (Years)",
+       y = "Frequency")+
   my_theme
+
+graph_save(output, presidents_age_graph)
+
 
 # The Graph ####
 Presidents_Age <- ggplot()+
