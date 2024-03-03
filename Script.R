@@ -158,18 +158,28 @@ presidents$Life_Expectancy <- sapply(presidents$Inauguration_Day, determine_age,
 presidents$Median_Age_Ratio <- presidents$Final_Age/presidents$Median_Age
 presidents$Life_Expectancy_Ratio <- presidents$Final_Age/presidents$Life_Expectancy
 
-# Sorting President and Proportions ####
+# Sorting President and Proportions. Descriptives ####
 ## Median Age ####
 president_proportion_median_age <- data.frame("President" = presidents$President, 
                                               "Ratio" = presidents$Median_Age_Ratio)
+
+president_proportion_median_age <- president_proportion_median_age[order(president_proportion_median_age$Ratio, decreasing = TRUE),]
+
 median_age_proportion_graph <- ggplot(president_proportion_median_age, aes(x = Ratio))+
   geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
   my_theme
 
-president_proportion_median_age <- president_proportion_median_age[order(president_proportion_median_age$Ratio, decreasing = TRUE),]
+## Life Expectancy ####
+president_proportion_life_expectancy <- data.frame("President" = presidents$President, 
+                                              "Ratio" = presidents$Life_Expectancy_Ratio)
+president_proportion_life_expectancy <- president_proportion_life_expectancy[order(president_proportion_life_expectancy$Ratio, decreasing = TRUE),]
+
 life_expectancy_ratio <- ggplot(president_proportion_life_expectancy, aes(x = Ratio))+
   geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
   my_theme
+
+life_expectancy_porportion_descriptives <- summary(president_proportion_life_expectancy$Ratio)
+life_expectancy_porportion_sd <- sd(president_proportion_life_expectancy$Ratio)
 
 # Descriptive of Age at Inauguration ####
 age_at_inauguration <- summary(presidents$Final_Age)
@@ -177,12 +187,6 @@ age_at_inauguration_sd <- sd(presidents$Final_Age)
 presidents_age_graph <- ggplot(presidents, aes(x = Final_Age))+
   geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
   my_theme
-
-
-## Life Expectancy ####
-president_proportion_life_expectancy <- data.frame("President" = presidents$President, 
-                                              "Ratio" = presidents$Life_Expectancy_Ratio)
-president_proportion_life_expectancy <- president_proportion_life_expectancy[order(president_proportion_life_expectancy$Ratio, decreasing = TRUE),]
 
 # The Graph ####
 Presidents_Age <- ggplot()+
