@@ -9,6 +9,18 @@ determine_age <- function(origin, slope, x){
   return(determined_age)
 }
 
+## Theme for graphics ####
+my_theme <- theme(axis.text.x = element_text(angle = 90, face = "bold", colour = "black"),
+                  axis.text.y = element_text(face = "bold", colour = "black"),
+                  legend.position = "none",
+                  panel.background = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  panel.grid.major.x = element_blank(),
+                  panel.grid.major.y = element_line(colour = "grey"),
+                  plot.caption = element_text(hjust = 0, face= "italic", color="#393b45"), #Default is hjust=1
+                  plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
+                  plot.caption.position =  "plot")
+
 # Read and Arrange Data ####
 ## President's Age ####
 presidents <- read_excel("data/presidents.xlsx", sheet = "Sheet1") 
@@ -150,7 +162,22 @@ presidents$Life_Expectancy_Ratio <- presidents$Final_Age/presidents$Life_Expecta
 ## Median Age ####
 president_proportion_median_age <- data.frame("President" = presidents$President, 
                                               "Ratio" = presidents$Median_Age_Ratio)
+median_age_proportion_graph <- ggplot(president_proportion_median_age, aes(x = Ratio))+
+  geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
+  my_theme
+
 president_proportion_median_age <- president_proportion_median_age[order(president_proportion_median_age$Ratio, decreasing = TRUE),]
+life_expectancy_ratio <- ggplot(president_proportion_life_expectancy, aes(x = Ratio))+
+  geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
+  my_theme
+
+# Descriptive of Age at Inauguration ####
+age_at_inauguration <- summary(presidents$Final_Age)
+age_at_inauguration_sd <- sd(presidents$Final_Age)
+presidents_age_graph <- ggplot(presidents, aes(x = Final_Age))+
+  geom_histogram(bins = 9, fill = "blue", colour = "black", alpha = 0.5)+
+  my_theme
+
 
 ## Life Expectancy ####
 president_proportion_life_expectancy <- data.frame("President" = presidents$President, 
@@ -169,7 +196,8 @@ Presidents_Age <- ggplot()+
   scale_y_continuous(breaks = seq(0, 100, by = 10))+
   scale_x_date(date_breaks = "20 year", date_labels = "%Y")+
   labs(title = "Age of US Presidents at Inauguration",
-       subtitle = "With the Names of the Five Older Presidents",
+       subtitle = "With the Names of the Five Oldest Presidents",
+       caption = "Yellow: Life Expectancy, Blue: Median Age, Light Blue: Estimated Median Age",
        x = "Year",
        y = "Age")+
   theme(axis.text.x = element_text(angle = 90, face = "bold", colour = "black"),
@@ -178,7 +206,10 @@ Presidents_Age <- ggplot()+
         panel.background = element_blank(),
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(colour = "grey"))
+        panel.grid.major.y = element_line(colour = "grey"),
+        plot.caption = element_text(hjust = 0, face= "italic", color="#393b45"), #Default is hjust=1
+        plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
+        plot.caption.position =  "plot")
 
 ggsave(filename = "output/presidents.png",
        plot = Presidents_Age,
