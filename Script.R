@@ -22,12 +22,13 @@ my_theme <- theme(axis.text.x = element_text(face = "bold", colour = "black"),
                   plot.caption.position =  "plot")
 
 ## Save_graph ####
-graph_save <- function(p, n){
+graph_save <- function(p, n, d){
   the_path <- deparse(substitute(p))
   the_name <- deparse(substitute(n))
-  ggsave(filename = paste0(the_path, "/", the_name, ".png" ),
+  the_device <- deparse(substitute(d))
+  ggsave(filename = paste0(the_path, "/", the_name, ".", the_device ),
          plot = n,
-         device = "png",
+         device = the_device,
          units = "cm",
          height = 16,
          width = 16)
@@ -184,7 +185,8 @@ median_age_proportion_graph <- ggplot(president_proportion_median_age, aes(x = R
        y = "Frequency")+
   my_theme
 
-graph_save(output, median_age_proportion_graph)
+graph_save(output, median_age_proportion_graph, png)
+graph_save(output, median_age_proportion_graph, pdf)
 
 median_age_porportion_descriptives <- summary(president_proportion_median_age$Ratio)
 median_age_porportion_sd <- sd(president_proportion_median_age$Ratio)
@@ -201,7 +203,8 @@ life_expectancy_ratio <- ggplot(president_proportion_life_expectancy, aes(x = Ra
        y = "Frequency")+
   my_theme
 
-graph_save(output, life_expectancy_ratio)
+graph_save(output, life_expectancy_ratio, png)
+graph_save(output, life_expectancy_ratio, pdf)
 
 life_expectancy_porportion_descriptives <- summary(president_proportion_life_expectancy$Ratio)
 life_expectancy_porportion_sd <- sd(president_proportion_life_expectancy$Ratio)
@@ -217,7 +220,8 @@ presidents_age_graph <- ggplot(presidents, aes(x = Final_Age))+
        y = "Frequency")+
   my_theme
 
-graph_save(output, presidents_age_graph)
+graph_save(output, presidents_age_graph, png)
+graph_save(output, presidents_age_graph, png)
 
 
 # The Graph ####
@@ -247,10 +251,5 @@ Presidents_Age <- ggplot()+
         plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
         plot.caption.position =  "plot")
 
-ggsave(filename = "output/presidents.png",
-       plot = Presidents_Age,
-       device = "png",
-       units = "cm",
-       height = 16,
-       width = 16)
-
+graph_save(output, Presidents_Age, png)
+graph_save(output, Presidents_Age, pdf)
