@@ -253,3 +253,40 @@ Presidents_Age <- ggplot()+
 
 graph_save(output, Presidents_Age, png)
 graph_save(output, Presidents_Age, pdf)
+
+
+# Determine the closest and farthest US presidents to the median age ####
+presidents %>% 
+  mutate("Median_Age_Difference" = Final_Age - Median_Age) %>% 
+  filter( min_rank(desc(Median_Age_Difference)) <= 5 | 
+            min_rank(Median_Age_Difference) <= 5 ) -> df_hi_lo
+
+letras <- "#f9f0e8"
+df_hi_lo_graph <- df_hi_lo %>% 
+  mutate("Young_Old" = ifelse(min_rank(desc(Median_Age_Difference)) <= 5 , "Close", "Far")) %>% 
+  ggplot(aes(x = reorder(President, -Median_Age_Difference), y = Median_Age_Difference, fill = Young_Old))+
+  geom_col()+
+  geom_text(aes( y = 5, label = President), hjust = "left", colour = letras, size = 7, fontface = "bold", family = "serif")+
+  scale_fill_manual( values = c('#e47200','#0f4d92'))+
+  labs(title = "US Presidents and Median Age of the US Population",
+       subtitle = "Closest and Farthest",
+       y = "Difference with the Median Age of US Population (in Years)")+
+  coord_flip()+
+  theme(axis.text = element_text(colour = letras, face = "bold"),
+        axis.ticks.x = element_line(colour = letras),
+        axis.title.x = element_text(colour = letras, size = 16),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = "none",
+        panel.background = element_rect(colour = "#383532", fill = "#383532"),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        plot.background = element_rect(colour = "#383532", fill = "#383532"),
+        plot.title = element_text(colour = letras, face = "bold", size = 19),
+        plot.subtitle = element_text(colour = letras, face = "bold", size = 16),
+        text = element_text(family = "serif"))
+  
+graph_save(output, df_hi_lo_graph, png)
+graph_save(output, df_hi_lo_graph, pdf)
