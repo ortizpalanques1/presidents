@@ -1,6 +1,7 @@
 # Libraries ####
 library(readxl)
 library(tidyverse)
+library(qpdf)
 
 # Functions ####
 ## correlation given age ####
@@ -41,6 +42,16 @@ number_to_months <- function(y){
   number_of_months <- as.integer(time_in_months)
   number_of_days <- round((time_in_months%%1) * 30, 0)
   time_as_text <- paste0(number_of_years, " years, ", number_of_months, " months, and ", number_of_days, " days.")
+  return(time_as_text)
+}
+
+## Number to calendar form. Reduced ####
+number_to_months_reduced <- function(y){
+  number_of_years <- as.integer(y)
+  time_in_months <- (y%%1) * 12
+  number_of_months <- as.integer(time_in_months)
+  number_of_days <- round((time_in_months%%1) * 30, 0)
+  time_as_text <- paste0(number_of_years, " Y, ", number_of_months, " M ", number_of_days, " D")
   return(time_as_text)
 }
 
@@ -310,12 +321,14 @@ presidents %>%
             min_rank(Final_Age) <= 5 ) -> df_hi_lo_age
 
 df_hi_lo_age$Time_in_Text <- sapply(df_hi_lo_age$Final_Age, number_to_months)
+df_hi_lo_age$Time_Reduced <- sapply(df_hi_lo_age$Final_Age, number_to_months_reduced)
+
 
 df_hi_lo_age_graph <- df_hi_lo_age %>% 
   mutate("Young_Old" = ifelse(min_rank(desc(Final_Age)) <= 5 , "Close", "Far")) %>% 
   ggplot(aes(x = reorder(President, -Final_Age), y = Final_Age, fill = Young_Old))+
   geom_col()+
-  geom_text(aes( y = 5, label = President), hjust = "left", colour = letras, size = 7, fontface = "bold", family = "serif")+
+  geom_text(aes( y = 5, label = paste0(President, ": ", Time_Reduced)), hjust = "left", colour = letras, size = 5, fontface = "bold", family = "serif")+
   scale_fill_manual( values = c('#e47200','#0f4d92'))+
   labs(title = "US Presidents: Youngest and Oldest",
        subtitle = "At the Moment of Their First Inauguration",
@@ -340,6 +353,7 @@ df_hi_lo_age_graph <- df_hi_lo_age %>%
 graph_save(output, df_hi_lo_age_graph, png)
 graph_save(output, df_hi_lo_age_graph, pdf)
 
-
+pdf_combine(input = c("output/Presidents_Age.pdf", "output/df_hi_lo_age_graph.pdf", "output/df_hi_lo_graph.pdf"),
+            output = "output/presentation.pdf")
 
 
