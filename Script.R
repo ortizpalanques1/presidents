@@ -34,6 +34,16 @@ graph_save <- function(p, n, d){
          width = 16)
 }
 
+## Number to calendar form ####
+number_to_months <- function(y){
+  number_of_years <- as.integer(y)
+  time_in_months <- (y%%1) * 12
+  number_of_months <- as.integer(time_in_months)
+  number_of_days <- round((time_in_months%%1) * 30, 0)
+  time_as_text <- paste0(number_of_years, " years, ", number_of_months, " months, and ", number_of_days, " days.")
+  return(time_as_text)
+}
+
 # Read and Arrange Data ####
 ## President's Age ####
 presidents <- read_excel("data/presidents.xlsx", sheet = "Sheet1") 
@@ -261,6 +271,8 @@ presidents %>%
   filter( min_rank(desc(Median_Age_Difference)) <= 5 | 
             min_rank(Median_Age_Difference) <= 5 ) -> df_hi_lo
 
+df_hi_lo$Time_in_Text <- sapply(df_hi_lo$Median_Age_Difference, number_to_months)
+
 letras <- "#f9f0e8"
 df_hi_lo_graph <- df_hi_lo %>% 
   mutate("Young_Old" = ifelse(min_rank(desc(Median_Age_Difference)) <= 5 , "Close", "Far")) %>% 
@@ -290,3 +302,44 @@ df_hi_lo_graph <- df_hi_lo %>%
   
 graph_save(output, df_hi_lo_graph, png)
 graph_save(output, df_hi_lo_graph, pdf)
+
+
+# Determine the youngest and oldest US presidents ####
+presidents %>% 
+  filter( min_rank(desc(Final_Age)) <= 5 | 
+            min_rank(Final_Age) <= 5 ) -> df_hi_lo_age
+
+df_hi_lo_age$Time_in_Text <- sapply(df_hi_lo_age$Final_Age, number_to_months)
+
+df_hi_lo_age_graph <- df_hi_lo_age %>% 
+  mutate("Young_Old" = ifelse(min_rank(desc(Final_Age)) <= 5 , "Close", "Far")) %>% 
+  ggplot(aes(x = reorder(President, -Final_Age), y = Final_Age, fill = Young_Old))+
+  geom_col()+
+  geom_text(aes( y = 5, label = President), hjust = "left", colour = letras, size = 7, fontface = "bold", family = "serif")+
+  scale_fill_manual( values = c('#e47200','#0f4d92'))+
+  labs(title = "US Presidents: Youngest and Oldest",
+       subtitle = "At the Moment of Their First Inauguration",
+       y = "Age at First Inauguration")+
+  coord_flip()+
+  theme(axis.text = element_text(colour = letras, face = "bold"),
+        axis.ticks.x = element_line(colour = letras),
+        axis.title.x = element_text(colour = letras, size = 16),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = "none",
+        panel.background = element_rect(colour = "#383532", fill = "#383532"),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        plot.background = element_rect(colour = "#383532", fill = "#383532"),
+        plot.title = element_text(colour = letras, face = "bold", size = 19),
+        plot.subtitle = element_text(colour = letras, face = "bold", size = 16),
+        text = element_text(family = "serif"))
+
+graph_save(output, df_hi_lo_age_graph, png)
+graph_save(output, df_hi_lo_age_graph, pdf)
+
+
+
+

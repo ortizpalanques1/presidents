@@ -15,7 +15,7 @@ Historically, United States' population median age and life expectancy have incr
 6. Create a chart with the age of the United States (US) Presidents and compare their age at time of inauguration with the median age and life expectancy.
 7. Add, to that chart, the names of the five older US presidents.
 8. Descriptive statistics of age of the presidents, age-median age ratio, and age-life expectancy ratio. Histogram and report.
-## Chart
+## Charts
 <img src="output/Presidents_Age.png" alt="drawing" width="300"/>
 <img src="output/df_hi_lo_graph.png" alt="drawing" width="300"/>
 <img src="output/presidents_age_graph.png" alt="drawing" width="300"/>
