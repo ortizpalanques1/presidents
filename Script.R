@@ -357,3 +357,24 @@ pdf_combine(input = c("output/Presidents_Age.pdf", "output/df_hi_lo_age_graph.pd
             output = "output/presentation.pdf")
 
 
+# Recover the ranks of the US presidents ####
+## Load Ranks
+presidents_ranks <- read_excel("data/presidents.xlsx", sheet = "Siena_Rank", range = cell_cols("B:C"))
+presidents_ranks$Overall_Rank <- as.numeric(presidents_ranks$Overall_Rank)
+presidents_ranks$Reverse_Rank <- abs(presidents_ranks$Overall_Rank - (max(presidents_ranks$Overall_Rank)+min(presidents_ranks$Overall_Rank)))
+
+## Create new data frame for the graphic
+presidents_rank_age <- presidents %>% 
+  select(Number, President, Final_Age) %>% 
+  left_join(presidents_ranks, by = "Number") %>% 
+  na.omit()
+
+# Graphic ####
+final_age_median <- median(presidents_rank_age$Final_Age)
+reverse_rank_median <- median(presidents_rank_age$Reverse_Rank)
+rank_age_graph <- ggplot(presidents_rank_age, aes(Final_Age, Reverse_Rank)) +
+  geom_point() +
+  geom_vline(xintercept = final_age_median)+
+  geom_hline(yintercept = reverse_rank_median)
+
+
