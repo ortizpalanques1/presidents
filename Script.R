@@ -370,11 +370,55 @@ presidents_rank_age <- presidents %>%
   na.omit()
 
 # Graphic ####
+## Obtaining the Median to separate the areas
 final_age_median <- median(presidents_rank_age$Final_Age)
 reverse_rank_median <- median(presidents_rank_age$Reverse_Rank)
-rank_age_graph <- ggplot(presidents_rank_age, aes(Final_Age, Reverse_Rank)) +
-  geom_point() +
-  geom_vline(xintercept = final_age_median)+
-  geom_hline(yintercept = reverse_rank_median)
 
+## Named vector to colour the areas
+nick_name_vector <- c("Old and Fit","Young and Unfit","Young and Fit","Old and Unfit")
+nick_name_colours <- c("#4dff95", "#ff954e", "#00ff67", "#ff6700")
 
+these_colours <- setNames(nick_name_colours, nick_name_vector)
+
+## Data Frame with the Limits of the Areas
+square_area <- data.frame(xstart = median(presidents_rank_age$Final_Age), 
+                          ystart = median(presidents_rank_age$Reverse_Rank),
+                          xend = c(+Inf, -Inf, -Inf, +Inf),
+                          yend = c(+Inf,-Inf,+Inf,-Inf),
+                          nick_name = nick_name_vector)
+
+## The Graph
+rank_age_graph <- ggplot()+
+  geom_rect(data = square_area, aes(xmin = xstart, ymin = ystart, xmax = xend, ymax = yend, fill = nick_name), alpha = 0.3)+
+  scale_fill_manual(values = these_colours, name = "Area")+
+  geom_point(data = presidents_rank_age, aes(x = Final_Age, y = Reverse_Rank)) +
+  geom_text(data = presidents_rank_age, aes(x = Final_Age, y = Reverse_Rank, label = President), 
+            size = 2.5, 
+            hjust = ifelse(presidents_rank_age$Final_Age <= final_age_median, 1, 0), 
+            nudge_x = ifelse(presidents_rank_age$Final_Age <= final_age_median, -0.5, 0.5))+
+  #geom_vline(xintercept = final_age_median)+
+  #geom_hline(yintercept = reverse_rank_median)+
+  scale_x_continuous(limits = c(28, 82), breaks = seq(from = 30, to = 80, by = 10))+
+  labs(title = "Age and Performance. United States Presidents",
+       subtitle = "Using the Siena College Research Institute's (SCRI) Survey of U.S. Presidents",
+       x = "Age",
+       y = "Rank")+
+  theme( axis.text.x = element_text(colour = "black", face = "bold"),
+         axis.text.y = element_blank(),
+         axis.ticks.x = element_line(colour = "black"),
+         axis.ticks.y = element_blank(),
+         axis.title = element_text(colour = "black", face = "bold"),
+         legend.position = "none",
+         panel.background = element_blank(),
+         panel.grid.minor = element_blank(),
+         panel.grid.major.x = element_blank(),
+         panel.grid.major.y = element_blank(),
+         plot.background = element_rect(colour = "#fbfcfb", fill = "#fbfcfb"),
+         plot.caption = element_text(hjust = 0, face= "italic"), #Default is hjust=1
+         plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
+         plot.caption.position =  "plot")
+
+graph_save(output, rank_age_graph, png)
+graph_save(output, rank_age_graph, pdf)
+  
+  
