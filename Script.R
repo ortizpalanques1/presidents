@@ -399,12 +399,13 @@ rank_age_graph <- ggplot()+
   #geom_vline(xintercept = final_age_median)+
   #geom_hline(yintercept = reverse_rank_median)+
   scale_x_continuous(limits = c(28, 82), breaks = seq(from = 30, to = 80, by = 10))+
+  scale_y_continuous(breaks = seq(from = 1, to = 45, by = 44), label = c("Worst", "Greatest"))+
   labs(title = "Age and Performance. United States Presidents",
        subtitle = "Using the Siena College Research Institute's (SCRI) Survey of U.S. Presidents",
        x = "Age",
        y = "Rank")+
   theme( axis.text.x = element_text(colour = "black", face = "bold"),
-         axis.text.y = element_blank(),
+         axis.text.y = element_text(colour = "black", face = "bold", size = 10),
          axis.ticks.x = element_line(colour = "black"),
          axis.ticks.y = element_blank(),
          axis.title = element_text(colour = "black", face = "bold"),
@@ -422,3 +423,15 @@ graph_save(output, rank_age_graph, png)
 graph_save(output, rank_age_graph, pdf)
   
   
+## The Regression
+president_rank_age_regression <- lm(Reverse_Rank ~ Final_Age, data = presidents_rank_age)
+
+p_value <- summary(president_rank_age_regression)$coefficients[2,4]
+intercept <- summary(president_rank_age_regression)$coefficients[1,1]
+final_age <- summary(president_rank_age_regression)$coefficients[2,1]
+intercept_sd <- summary(president_rank_age_regression)$coefficients[1,2]
+final_age_sd <- summary(president_rank_age_regression)$coefficients[2,2]
+intercept_p <- summary(president_rank_age_regression)$coefficients[1,4]
+
+president_rank_age_pearson <- cor.test(presidents_rank_age$Final_Age, presidents_rank_age$Reverse_Rank)
+

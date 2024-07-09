@@ -65,6 +65,11 @@ Although, in general, our mental abilities decline as we age, some peak at one m
 4. Using *ggplot2*, visualize our data following these steps: Scatter plot of age (x-axis) vs performance (reverse scale in the y-axis) with a regression line. Draw two lines: one vertical based on the median age and another horizontal based on the median performance. The product is the *performance_age* graph.
 5. Following the median based lines in the *performance_age* graph, create four different zones. The product is a new set of layers in the graph.
 6. Brief report with our findings. The product is the subsection "Analysis." 
+
+## Analysis
+Age has become an important issue during this electoral campaign for the United States Presidency. Both candidates are the oldest in the country's history. Scholars, physicians, and voters have discussed how well mentally fitted are Biden and Trump. This campaign's first debate (June 27, 2024) showed a partially disoriented Biden, while Trump was able to keep the tempo. Without judging the quality of the reasoning and based only on the public perception, Biden trailed Trump. 
+Decline is inevitable as we age, and this election makes us conscious of the matter. Leaving aside for a moment this extreme case, we can ask ourselves about the relationship between age and the president's performance. The Siena College Research Institute (SCRI) periodically asks scholars about the president's strengths. Based on the answers, the SCRI ranks the United States presidents. With this information and their respective age, I created a visualization in R that puts together age (young, old) and performance ("greatest" and "wost" using the words in the title of the SCRI post) in four groups divided by the median of each variable. From the beginning, I did not expect a significant relationship (r = -0.17, p = 0.28); however, the final result does not lack interest. Scholars rank the two youngest presidents (Theodore Roosevelt and John F. Kennedy) among the best. The performance of the oldest is more diverse. Reagan and Biden are above the median, but Buchanan, Harrison, and Trump are in the extreme of both oldest and worst. 
+
 ## Sources
 
 ### Presidents' Performance
